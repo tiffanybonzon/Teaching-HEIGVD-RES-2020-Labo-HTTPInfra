@@ -1,60 +1,38 @@
-## Step 1: Static HTTP server with apache httpd
+## Step 2: Dynamic HTTP server with express.js
 
-## Choix de l'image
+## Node
 
-We use the official php Docker image (https://hub.docker.com/_/php/)
+La dernière version stable d'apres le site officiel est 12.16.3 (https://nodejs.org/en/)
 
-Copy the lines into the Dockerfile
+Le Dockerfile
 
 ```dockerfile
-FROM php:7.2-apache
+FROM node:12.16.3
 
-COPY content/ /var/www/html/
+COPY src/ /opt/app
+
+CMD ["node", "/opt/app/index.js"]
 ```
 
-## Exploration de l'image
+dans le dossier local src/
 
-`docker run -d -p 9090:80 php:7.2-apache`
+`npm init` 
 
-`docker logs <container_name>` montre que Apache à bien démarré sans erreurs
+`npm install --save chance`
 
-Un telnet rapide nous montre que le serveur écoute sur le port 80 (port mapping de 9090 à 80) et répond, mais indique une erreur 403
+fichier index.js
 
-![](images/telnet403.png)
+```
+sum code
+```
 
-On peut également accéder au serveur avec l'adresse 172.17.0.2:80
+Build de l'image docker
 
-`docker exec -it <container_name> /bin/bash` Permet de lancer un shell interactif dans le container afin d'explorer le filesystem
+`docker build -t res/express_students .`
 
-- La configuration se trouve dsns /etc/apache2
+Run l'image
 
-## Ajout de contenu à notre image
+`docker run res/express_students`
 
-Création d'un fichier index.html dans le dossier content/
-
-Build de l'image
-
-`docker build -t res/apache-php .`
-
-Run de l'image
-
-`docker run -p 9090:80 -d res/apache-php`
-
-On peut mainteant afficher notre index depuis notre navigateur web
-
-On peut laner un deuxième container basé sur notre image mais il faut chenger le port mapping
-
-`docker run -p 9091:80 -d res/apache-php`
-
-## Template
-
-Téléchargement d'un template ~~random~~ sympa https://bootstrapmade.com/knight-free-bootstrap-theme/
-
-dézip dans le dossier contenu, rebuild de l'image, lancement du container basé sur l'image avec les sources à jour, le template est maintenant visible sur notre server apache
-
-### Personnalisation
-
-Suppression de sections, modification de certains textes...
-
-Il faut rebuild l'image, et re-run un container pour que ces modifications soient visible sur le serveur apache
+## Express
 
