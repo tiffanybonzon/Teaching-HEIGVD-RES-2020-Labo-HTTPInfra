@@ -1,105 +1,55 @@
-## Step 2: Dynamic HTTP server with express.js
+## Step 3: Reverse proxy with apache (static configuration)
 
-## Node
+Lancement des containers crées précédemment (apache-php et express_student_express)
 
-La dernière version stable d'apres le site officiel est 12.16.3 (https://nodejs.org/en/)
+- `docker run -d --name apache_static res/apache-php`
+- `docker run -d --name express_dynamic res/express_students_express`
 
-Le Dockerfile
+Récuperer les adresses IP des deux containers
 
-```dockerfile
-FROM node:12.16.3
+- docker inspect <container_name> | grep -i ipaddress
 
-COPY src/ /opt/app
 
-#indique la commande à faire à chaque run du container
-CMD ["node", "/opt/app/index.js"] 
+
+Run le container en mode interactif
+
+- `docker run -p 8080:80 -it php:7.2-apache /bin/bash`
+- Naviger dans la config des sites apache `cd /etc/apache2/sites-available`
+- Copie de la config 000-default.conf en 001-reverse-proxy.conf
+- Installation de vim `apt-get undate && apt-get install vim`
+- Edit de la config 001
+
+```
+<VirtualHost *:80>
+	ServerName demo.res.ch
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+	
+	# https://httpd.apache.org/docs/2.4/en/mod/mod_proxy.html
+	ProxyPass "/api/companies/" "http://172.17.0.3:3000/"
+	ProxyPassReverse "/api/companies/" "http://172.17.0.3:3000/"
+	
+	ProxyPass "/" "http://172.17.0.2:80/"
+    ProxyPassReverse "/" "http://172.17.0.2:80/"
+</VirtualHost>
+
 ```
 
-dans le dossier local src/
+- Activer le site `a2ensite 001*`
+- Recharger le service apache `service apache2 reload`
+  - On constate que les modules nécessaire à l'utilisation du reverse proxy ne sont pas activée![](./images/apacheProxyFail.png)
+  - https://httpd.apache.org/docs/2.4/en/mod/mod_proxy.html indique quel module activer
+    - `a2enmod proxy && a2enmod proxy_http && service apache2 restart`
 
-`npm init` 
+- Maintenant on ne peut accéder aux pages construites précédemment (static et express) que par le proxy ![](./images/reverseProxyWorks.png)
 
-- Remplire les champs demandés
 
-`npm install --save chance` #installation du module node "chance"
 
-fichier index.js
+Pourquoi est-ce une config fragile qui doit être améliorée? IP hard codées, dépend comment en redémarrant les containers elles peuvent changer et le reverse proxy ne fonctionnerait plus (les pages ne seraient plus accessible vu qu'on a du port mapping que pour le reverse proxy)
 
-```js
-var Chance = require('chance');
-var chance = new Chance();
 
-console.log("Bonjour " + chance.name());
-```
 
-Build de l'image docker
+You can explain and prove that the static and dynamic servers cannot be reached directly (reverse proxy is a single entry point in the infra).
 
-`docker build -t res/express_students_node .`
-
-Run l'image
-
-`docker run res/express_students_node`
-
-## Express
-
-`npm install --save express` #installation du module node "express"
-
-fichier index.js
-
-```js
-var Chance = require('chance');
-var chance = new Chance();
-
-var express = require('express');
-var app = express();
-
-app.get('/', function(req, res) {
-        res.send(generateStudents());
-});
-
-app.get('/test', function(req, res) { // L'ordre n'a pas d'importance :)
-        res.send("This is test");
-});
-
-app.listen(3000, function () {
-        console.log("Accepting HTTP requests on port 3000");
-});
-
-function generateStudents() {
-        var numberOfStudents = chance.integer({min: 1, max: 10});
-        console.log("Generating " + numberOfStudents + " student(s)...");
-
-        var students = [];
-
-        for(var i = 0; i < numberOfStudents; ++i) {
-                var gender = chance.gender();
-                var birthYear = chance.year({min:1992, max:1999});
-
-                students.push({
-                        firstName: chance.first({gender: gender}),
-                        lastName: chance.last(),
-                        gender: gender,
-                        birthday: chance.birthday({year: birthYear})
-                });
-        }
-
-        console.log(students);
-        return students;
-}
-```
-
-Build de l'image docker
-
-`docker build -t res/express_students_express .`
-
-Run l'image
-
-`docker run res/express_students_express`
-
-- Il n'y a pour le moment pas de port mapping, il faut donc envoyer les requêtes au container directement
-  - Son IP est trouvable avec `docker inspect <container_name>`
-
-`docker run -p 4242:3000 res/express_students_express`
-
-- On a maintenant accès au serveur Express en utilisant l'IP de la machine hôte sur le port 4242
-
+- Explain: no part mapping, the php and node containers are unreachable for the outside world
+- Proof: need other PC, or bridged VM
