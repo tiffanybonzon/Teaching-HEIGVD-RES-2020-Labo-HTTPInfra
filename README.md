@@ -125,4 +125,4 @@ Ceci à cause du fait qu'on a une configuration vide pour le site 000-default
 
 
 
-Possibilité d'accéder au site avec l'adrese `demo.res.ch` en éditant le fichier host de l'OS (ne pas oublier de préciser le port 8080)
+Possibilité d'accéder au site avec l'adrese `demo.res.ch` en éditant le fichier host de l'OS (ne pas oublier de préciser le port 8080 dans le navigateur...pas dans le fichier hosts)
