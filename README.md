@@ -93,3 +93,18 @@ php /var/apache2/templates/config-template.php > /etc/apache2/sites-available/00
 
 `docker build -t res/apache_rp`, `docker run -e STATIC_IP=192.168.1.42 -e DYNAMIC_IP=192.168.1.21 res/apache_rp`  et `docker exec -it <container_name> /bin/bash` pour s'assurer que la copie à été effectuée correctement et que les script fonctionnent bien comme prévu
 
+## Test de l'infrastructure
+
+Kill and rm all docker containers
+
+(script)
+
+démarrer 4 containers apache-php, donc un avec le nom apache_static
+
+démarrer 3 containers express_students_express, dont un avec le nom express_dynamic
+
+récupérer les IP (172.17.0.5 et 172.17.0.8)
+
+Lancer le container apache_rp en lui passant les 2 IP
+
+On vérifie que l'application est fonctionnelle (html, css, les requêtes AJAX)
