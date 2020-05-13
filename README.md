@@ -112,3 +112,9 @@ On peut aussi voir les requêtes avec les dev tools du navigateur (Dans Network/
 
 
 On peut maintenant appliquer ces modifications à l'image docker, puis la rebuild, le rerun (on espere que l'adresse IP est la même)
+
+
+
+You are able to explain why your demo would not work without a reverse proxy (because of a security restriction).
+
+https://en.wikipedia.org/wiki/Same-origin_policy
