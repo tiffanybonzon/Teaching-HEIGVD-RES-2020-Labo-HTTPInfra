@@ -2,7 +2,6 @@
 	$static_ip = getenv('STATIC_IP');
 	$dynamic_ip = getenv('DYNAMIC_IP');
 ?>
-
 <VirtualHost *:80>
 	ServerName demo.res.ch
 	ErrorLog ${APACHE_LOG_DIR}/error.log

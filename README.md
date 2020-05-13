@@ -74,3 +74,22 @@ reprise du fichier 001-reverse-proxy et remplacement des `"` par `'` et ajout de
 </VirtualHost>
 ```
 
+Copie du nouveau fichier dans le container en modifiant le Dockerfile
+
+```dockerfile
+...
+COPY templates/ /var/apache2/templates
+...
+```
+
+Modifier notre fichier apache2-foreground pour exécuter notre script php
+
+```bash
+...
+echo "Dynamic $DYNAMIC_IP"
+php /var/apache2/templates/config-template.php > /etc/apache2/sites-available/001-reverse-proxy.conf
+...
+```
+
+`docker build -t res/apache_rp`, `docker run -e STATIC_IP=192.168.1.42 -e DYNAMIC_IP=192.168.1.21 res/apache_rp`  et `docker exec -it <container_name> /bin/bash` pour s'assurer que la copie à été effectuée correctement et que les script fonctionnent bien comme prévu
+
