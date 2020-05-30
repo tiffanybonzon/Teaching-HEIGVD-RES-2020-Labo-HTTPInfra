@@ -69,3 +69,5 @@ Il faut:
 - Rebuild l'image, et 
 - Re-run un container pour que ces modifications soient visibles sur le serveur Apache
 
+Le script de démo se trouve dans `docker-images/apache-php-image`
+
