@@ -1,136 +1,171 @@
-# Teaching-HEIGVD-RES-2020-Labo-HTTPInfra
+# HEIGVD-RES-2020-Labo-HTTPInfra
 
-## Objectives
+Auteurs: Laurent Thoeny & Tiffany Bonzon
 
-The first objective of this lab is to get familiar with software tools that will allow us to build a **complete web infrastructure**. By that, we mean that we will build an environment that will allow us to serve **static and dynamic content** to web browsers. To do that, we will see that the **apache httpd server** can act both as a **HTTP server** and as a **reverse proxy**. We will also see that **express.js** is a JavaScript framework that makes it very easy to write dynamic web apps.
+Version docker utilisée : `19.03.8-ce` OS : `Linux 5.6 - Manjaro`
 
-The second objective is to implement a simple, yet complete, **dynamic web application**. We will create **HTML**, **CSS** and **JavaScript** assets that will be served to the browsers and presented to the users. The JavaScript code executed in the browser will issue asynchronous HTTP requests to our web infrastructure (**AJAX requests**) and fetch content generated dynamically.
+Version docker utilisée : `19.03.10-ce` OS : `Linux 5.6.15 - Arch Linux`
 
-The third objective is to practice our usage of **Docker**. All the components of the web infrastructure will be packaged in custom Docker images (we will create at least 3 different images).
-
-## General instructions
-
-* This is a **BIG** lab and you will need a lot of time to complete it. 
-* We have prepared webcasts for a big portion of the lab (**what can get you the "base" grade of 4.5**).
-* Be aware that the webcasts have been recorded in 2016. There is no change in the list of tasks to be done, but of course **there are some differences in the details**. For instance, the Docker images that we use to implement the solution have changed a bit and you will need to do **some adjustments to the scripts**. This is part of the work and we ask you to document what the required adaptations in your report.
-* The webcasts present one solution. Feeling adventurous and want to propose another one (for instance, by using nginx instead apache httpd, or django instead of express.js)? Go ahead, we **LOVE** that. Make sure to document your choices in the report. If you are not sure if your choice is compatible with the list of acceptance criteria? Not sure about what needs to be done to get the extra points? Reach out to the teaching team. **Learning to discuss requirements with a "customer"** (even if this one pays you with a grade and not with money) is part of the process!
-* To get **additional points**, you will need to do research in the documentation by yourself (we are here to help, but we will not give you step-by-step instructions!). To get the extra points, you will also need to be creative (do not expect complete guidelines).
-* The lab can be done in **groups of 2 students**. You will learn very important skills and tools, which you will need to next year's courses. You cannot afford to skip this content if you want to survive next year. Essentially, this means that it's a pretty bad idea to only have one person in the group doing the job...
-* Read carefully all the **acceptance criteria**.
-* We will request demos as needed. When you do your **demo**, be prepared to that you can go through the procedure quickly (there are a lot of solutions to evaluate!)
-* **You have to write a report. Please do that directly in the repo, in one or more markdown files. Start in the README.md file at the root of your directory.**
-* The report must contain the procedure that you have followed to prove that your configuration is correct (what you would do if you were doing a demo).
-* Check out the **due dates** on the main repo for the course.
+*Disclaimer : Désolé par peur de ne pas pousser quelques choses d'utile alors il y a également toute la "pollution" made in NodeJS sur notre repo.*
 
 
-## Step 1: Static HTTP server with apache httpd
 
-### Webcasts
+Les 5 premières étapes du labo sont dans leurs branches respectives
 
-* [Labo HTTP (1): Serveur apache httpd "dockerisé" servant du contenu statique](https://www.youtube.com/watch?v=XFO4OmcfI3U)
+- [Step 1: Static HTTP server with httpd](https://github.com/tiffanybonzon/Teaching-HEIGVD-RES-2020-Labo-HTTPInfra/tree/fb-apache-static)
+- [Step 2: Dynamic HTTP server with express.js](https://github.com/tiffanybonzon/Teaching-HEIGVD-RES-2020-Labo-HTTPInfra/tree/fb-express-dynamic)
+- [Step 3: Reverse proxy with apache (static configuration)](https://github.com/tiffanybonzon/Teaching-HEIGVD-RES-2020-Labo-HTTPInfra/tree/fb-apache-reverse-proxy)
+- [Step 4: AJAX requests with JQuery](https://github.com/tiffanybonzon/Teaching-HEIGVD-RES-2020-Labo-HTTPInfra/tree/fb-ajax-jquery)
+- [Step 5: Dynamic reverse proxy configuration](https://github.com/tiffanybonzon/Teaching-HEIGVD-RES-2020-Labo-HTTPInfra/tree/fb-dynamic-configuration)
 
-### Acceptance criteria
+Les étapes additionnelles se trouvent toutes dans la branche [fb-additions]()
 
-* You have a GitHub repo with everything needed to build the Docker image.
-* You can do a demo, where you build the image, run a container and access content from a browser.
-* You have used a nice looking web template, different from the one shown in the webcast.
-* You are able to explain what you do in the Dockerfile.
-* You are able to show where the apache config files are located (in a running container).
-* You have **documented** your configuration in your report.
+### Management UI
 
-## Step 2: Dynamic HTTP server with express.js
+Pour la management UI, on connaissait [Portainer](https://www.portainer.io/) et avons donc décidé de l'implémenter sur le système, principalement car nous apprécions l'idée d'avoir un système de gestion qui lui-même est un container.
 
-### Webcasts
+Pour l'utilisation, rien de très compliqué, tout d'abord il est nécessaire de créer un volume pour les données qui vont être utilisées : `docker volume create portainer_data`.
 
-* [Labo HTTP (2a): Application node "dockerisée"](https://www.youtube.com/watch?v=fSIrZ0Mmpis)
-* [Labo HTTP (2b): Application express "dockerisée"](https://www.youtube.com/watch?v=o4qHbf_vMu0)
+Ensuite on démarre le container
 
-### Acceptance criteria
+```
+docker run -d -p 9000:9000 --name=portainer --restart=always 
+-v var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
+```
 
-* You have a GitHub repo with everything needed to build the Docker image.
-* You can do a demo, where you build the image, run a container and access content from a browser.
-* You generate dynamic, random content and return a JSON payload to the client.
-* You cannot return the same content as the webcast (you cannot return a list of people).
-* You don't have to use express.js; if you want, you can use another JavaScript web framework or event another language.
-* You have **documented** your configuration in your report.
+À partir de là, une interface est disponible à l'adresse [localhost sur le port 9000](http://localhost:9000/).
+
+[![img](images/portainer.png)](https://github.com/Sicriss/Teaching-HEIGVD-RES-2020-Labo-HTTPInfra/blob/master/images/portainer.png)
+
+Plus tard nous utiliserons un script de lancement intitulé `portainer.sh` qui permet de simplifier l'utilisation des nombreuses options de lancement et inclura les *labels* que nous décrirons ci-dessous. Le script est tout de même disponible ci-dessous.
+
+```
+#!/bin/bash
+
+# On lance le container avec les bons labels et tout :)
+docker run -d --name=portainer \
+        --label "traefik.http.routers.portainer.rule"="Host(\`admin.res.ch\`)" \
+        --label "traefik.http.services.portainer.loadbalancer.server.port"="9000" \
+        --restart=always \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v portainer_data:/data portainer/portainer
+```
+
+### Load Balancing, Clusters & Sticky Sessions
+
+Les trois points ci-dessus sont originalement distincts mais seront documentés ensembles. En effet nous avons décidé d'utiliser _Traefik_ afin de gérer ces points et nous éloignons donc de la découpe d'origine, prévue pour une implémentation via Apache. L'idée d'origine était de faire ceci via _Docker Swarm_ mais avoir plusieurs clusters sur la même machine semblait compliqué et nous avons par conséquent opté pour une solution plus haut niveau.
+
+_Traefik_ tire profit de labels ajoutés aux containers pour activer des services ou pour son routage, il est entre autre utilisé avec _docker-compose_ mais nous allons ici simplement ajouter les labels correspondants dans les  _dockerfile_ et des scripts de lancement ce qui fonctionne tout aussi bien.
+
+Premièrement il faut lancer un container _Traefik_ afin d'activer le dit service, nous faisons ceci à l'aide d'un script `Traefik.sh` qui est disponible ci-dessous.
+
+```bash
+#!/bin/bash
 
 
-## Step 3: Reverse proxy with apache (static configuration)
+docker run -d -p 8080:8080 -p 80:80 --name traefik \
+        --label "traefik.http.routers.traefik.rule"="Host(\`config.res.ch\`)" \
+        --label "traefik.http.services.traefik.loadbalancer.server.port"="8080" \
+        -v $PWD/traefik/traefik.yml:/etc/traefik/traefik.yml \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        traefik:v2.0
+```
 
-### Webcasts
-
-* [Labo HTTP (3a): reverse proxy apache httpd dans Docker](https://www.youtube.com/watch?v=WHFlWdcvZtk)
-* [Labo HTTP (3b): reverse proxy apache httpd dans Docker](https://www.youtube.com/watch?v=fkPwHyQUiVs)
-* [Labo HTTP (3c): reverse proxy apache httpd dans Docker](https://www.youtube.com/watch?v=UmiYS_ObJxY)
-
-
-### Acceptance criteria
-
-* You have a GitHub repo with everything needed to build the Docker image for the container.
-* You can do a demo, where you start from an "empty" Docker environment (no container running) and where you start 3 containers: static server, dynamic server and reverse proxy; in the demo, you prove that the routing is done correctly by the reverse proxy.
-* You can explain and prove that the static and dynamic servers cannot be reached directly (reverse proxy is a single entry point in the infra). 
-* You are able to explain why the static configuration is fragile and needs to be improved.
-* You have **documented** your configuration in your report.
+Et du coup, ce fichier `traefik.yml` ? On peut normalement y faire plein de configuration supplémentaire mais nous ne l'utilisons au final pas vraiment, il y a tout de même une règle par défaut de définie pour les containers fournis par `Docker` qui est que l'hôte demandé doit être `res.ch`.
 
 
-## Step 4: AJAX requests with JQuery
 
-### Webcasts
+##### Clusters, session qui collent et répartition de charge
 
-* [Labo HTTP (4): AJAX avec JQuery](https://www.youtube.com/watch?v=fgpNEbgdm5k)
+Ensuite sur _Traefik_ les deux concepts principaux que nous utilisons sont les _services_ et les _routeurs_. On peut définir des routeurs puis attribuer à ces derniers des règles pour les containers qu'on lance, même chose avec les services. Pour des raisons de simplicité nous allons ici utiliser un routeur et un service pour représenter les quatre aspects de notre architecture (statique, dynamique, management UI & Traefik).
 
-### Acceptance criteria
+Comme vous le voyez ci-dessus, nous avons attribué à Traefik un service du même nom, lui avons assigné le rôle d'effectuer du load balancing et nous avons indiqué à Traefik sur quel port le service était, ici il s'agit du port _8080_ par exemple. Nous avons indiqué à notre routeur dedié que nous souhaitions répondre lorsque l'hôte était `config.res.ch`.
 
-* You have a GitHub repo with everything needed to build the various images.
-* You can do a complete, end-to-end demonstration: the web page is dynamically updated every few seconds (with the data coming from the dynamic backend).
-* You are able to prove that AJAX requests are sent by the browser and you can show the content of th responses.
-* You are able to explain why your demo would not work without a reverse proxy (because of a security restriction).
-* You have **documented** your configuration in your report.
+Même chose pour _Portainer_ avec un service de loadbalancing qui écoute sur le port 9000 et répond à l'appel de l'host `admin.res.ch`, mais dans les deux cas ci-dessous on se contente d'un container (surtout pour une démonstration) .
 
-## Step 5: Dynamic reverse proxy configuration
+Par contre, pour nos containers statiques et dynamiques, il est très intéressant d'avoir un routeur dedié ainsi qu'un service de loadbalancing qui contacte les containers avec le label concerné et sur le port indiqué, non seulement cela nous permet d'effectuer du _dynamic clustering_ (les containers ajoutés ou retirés sont automatiquement gérés par le service) mais en plus le service de _load balancing_ effectue ... son nom est très explicite. En plus, il paraît qu'une simple option ajoutée va permettre au service susmentionné de conserver le serveur qui répond dans un cookie et ainsi de faire des _sticky sessions_, magnifique.
 
-### Webcasts
+(Il est important de noter que si le serveur auquel le client est connecté est éteint ou devient considéré _unhealthy_ pour une raison ou une autre alors la requête sera dirigée vers un nouveau serveur.) 
 
-* [Labo HTTP (5a): configuration dynamique du reverse proxy](https://www.youtube.com/watch?v=iGl3Y27AewU)
-* [Labo HTTP (5b): configuration dynamique du reverse proxy](https://www.youtube.com/watch?v=lVWLdB3y-4I)
-* [Labo HTTP (5c): configuration dynamique du reverse proxy](https://www.youtube.com/watch?v=MQj-FzD-0mE)
-* [Labo HTTP (5d): configuration dynamique du reverse proxy](https://www.youtube.com/watch?v=B_JpYtxoO_E)
-* [Labo HTTP (5e): configuration dynamique du reverse proxy](https://www.youtube.com/watch?v=dz6GLoGou9k)
+![](images/routes.png)
 
-### Acceptance criteria
+Maintenant comment activer les labels en questions sur les containers ? Rien de plus facile, un attribut _LABEL_ existe pour les fichiers de configuration Docker et la documentation _Traefik_ fait le reste.
 
-* You have a GitHub repo with everything needed to build the various images.
-* You have found a way to replace the static configuration of the reverse proxy (hard-coded IP adresses) with a dynamic configuration.
-* You may use the approach presented in the webcast (environment variables and PHP script executed when the reverse proxy container is started), or you may use another approach. The requirement is that you should not have to rebuild the reverse proxy Docker image when the IP addresses of the servers change.
-* You are able to do an end-to-end demo with a well-prepared scenario. Make sure that you can demonstrate that everything works fine when the IP addresses change!
-* You are able to explain how you have implemented the solution and walk us through the configuration and the code.
-* You have **documented** your configuration in your report.
+Dockerfile pour notre image statique (apache_php)
 
-## Additional steps to get extra points on top of the "base" grade
+```dockerfile
+LABEL traefik.http.routers.static.rule=Host(`res.ch`)
+LABEL traefik.http.services.static.loadbalancer.server.port=80
+LABEL traefik.http.services.static.loadbalancer.sticky.cookie.name="stickyCookie"
+```
 
-### Load balancing: multiple server nodes (0.5pt)
+Dockerfile pour notre image dynamique (express_students)
 
-* You extend the reverse proxy configuration to support **load balancing**. 
-* You show that you can have **multiple static server nodes** and **multiple dynamic server nodes**. 
-* You prove that the **load balancer** can distribute HTTP requests between these nodes.
-* You have **documented** your configuration and your validation procedure in your report.
+```
+LABEL traefik.http.routers.dynamic.rule=Host(`api.res.ch`)
+LABEL traefik.http.services.dynamic.loadbalancer.server.port=3000
+```
 
-### Load balancing: round-robin vs sticky sessions (0.5 pt)
+Et voilà, les containers _build_ avec cette nouvelle configuration seront gérés automatiquement.
 
-* You do a setup to demonstrate the notion of sticky session.
-* You prove that your load balancer can distribute HTTP requests in a round-robin fashion to the dynamic server nodes (because there is no state).
-* You prove that your load balancer can handle sticky sessions when forwarding HTTP requests to the static server nodes.
-* You have documented your configuration and your validation procedure in your report.
 
-### Dynamic cluster management (0.5 pt)
 
-* You develop a solution, where the server nodes (static and dynamic) can appear or disappear at any time.
-* You show that the load balancer is dynamically updated to reflect the state of the cluster.
-* You describe your approach (are you implementing a discovery protocol based on UDP multicast? are you using a tool such as serf?)
-* You have documented your configuration and your validation procedure in your report.
+##### Donc ... tout fonctionne ?
 
-### Management UI (0.5 pt)
+Non. Nous avons procédé à une modification majeure qui est la transformation de notre `/api/` en un sous-domaine à part entière, il est donc nécessaire d'adapter le code en conséquence, l'URL doit être adaptée dans le fichier `index.html` afin de faire la requête au bon endroit.
 
-* You develop a web app (e.g. with express.js) that administrators can use to monitor and update your web infrastructure.
-* You find a way to control your Docker environment (list containers, start/stop containers, etc.) from the web app. For instance, you use the Dockerode npm module (or another Docker client library, in any of the supported languages).
-* You have documented your configuration and your validation procedure in your report.
+##### C'était donc si simple ?
+
+Encore non. En rechargeant notre page HTML nous constatons que le code dynamique n'est pas affiché, en ouvrant la console de _debug_  on constate un message d'erreur.
+
+`The Same Origin Policy disallows reading the remote resource at [URL]`
+
+Ce message est tout à fait normal, cette _policy_ est implémentée par les navigateurs (web pas Christophe Colomb) et permet de vérifier que les scripts utilisent des données de la même _origine_ (essentiellement vérifié par le nom de domaine et le port), il prévient notamment les attaques CSRF ou autres attaques qui exploitent une page web afin de voler le contenu d'une autre ou des données personnelles.
+
+Pour résoudre ceci, on va dire à notre application dynamique derrière l'API de retourner des en-têtes qui autorisent spécifiquement les requêtes qui vont lui être faites.
+
+```javascript
+app.use(function(req, res, next) 
+{
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, 		Accept");
+    next();
+});
+```
+
+En plaçant ce code au début de notre fichier `index.js`alors on s'est assuré d'accepter les requêtes de toutes les origines. On aurait également pu le faire uniquement pour les requêtes venant de `res.ch` mais cela semble censé d'accepter les requêtes quand on s'appelle _API_ et puis nous ne sommes bien heureusement pas étudiants de la filière sécurité.
+
+
+
+##### Et maintenant ? 
+
+Voilà, nos routes sont configurées, il faut les ajouter au fichier hôte (les 4) puis on peut tester localement, il est maintenant très simple d'étendre l'infrastructure si désiré et de gérer d'avantage de containers à la volée.
+
+De petites améliorations seraient possibles (par exemple on pourrait désactiver l'accès _Traefik_ depuis le port 8080 de `res.ch`) mais il s'agit là de perfectionnement.
+
+
+
+##### Démonstration
+
+Dans le but de préparer au mieux la démonstration et de lancer automatiquement les containers présentés, pour cela nous avons créé un petit script `demo.sh` dans notre dossier `docker-images`.
+
+```bash
+#!/bin/bash
+
+docker stop `docker ps -qa`
+docker rm `docker ps -qa`
+
+# On s'assure d'avoir les dernières versions des images
+docker build -t res/apache_php apache-php-image
+docker build -t res/express_students express-image
+
+# On lance tout d'abord les deux containers admin / config 
+$("pwd")/traefik.sh
+$("pwd")/portainer.sh
+
+# On lance ensuite deux containers de chaque type 
+docker run -d --name nodeApp res/express_students 
+docker run -d --name nodeApp2 res/express_students 
+docker run -d --name landingPage res/apache_php
+docker run -d --name landingPage2 res/apache_php
+```
