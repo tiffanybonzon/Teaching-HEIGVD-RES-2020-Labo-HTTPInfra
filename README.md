@@ -34,7 +34,7 @@ Un telnet rapide nous montre que le serveur écoute bien sur le port 80 (port ma
 
 ## Ajout de contenu à notre image
 
-- Création d'un fichier index.html dans le dossier content/
+- Création d'un fichier index.html dans le dossier `content/`
 
 - Build de l'image
   
@@ -47,18 +47,18 @@ Un telnet rapide nous montre que le serveur écoute bien sur le port 80 (port ma
 
 On peut maintenant afficher notre index depuis notre navigateur web
 
-- Il est aussi possible de lancer un deuxième container basé sur notre image mais il faut chenger le port mapping
+- Il est aussi possible de lancer un deuxième container basé sur notre image mais il faut changer le port mapping
   - `docker run -p 9091:80 -d res/apache-php`
 
 ## Template
 
 - Téléchargement d'un template ~~random~~ sympa https://bootstrapmade.com/knight-free-bootstrap-theme/
 
-- Désarchivage dans le dossier `contenu`
-- Rebuild de l'image, 
+- Désarchivage dans le dossier `content`
+- Rebuild de l'image
 - Lancement du container basé sur l'image avec les sources à jour
 
-Le template est maintenant visible sur notre server apache
+Le template est maintenant visible sur notre server Apache
 
 ### Personnalisation
 
@@ -67,5 +67,5 @@ Suppression de sections, modification de certains textes...
 Il faut: 
 
 - Rebuild l'image, et 
-- Re-run un container pour que ces modifications soient visibles sur le serveur apache
+- Re-run un container pour que ces modifications soient visibles sur le serveur Apache
 
