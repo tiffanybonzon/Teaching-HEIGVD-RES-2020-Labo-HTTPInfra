@@ -1,26 +1,18 @@
-#/bin/zsh
+#!/bin/bash
 
-# Arrêt et suppression de tous les running containers
-docker stop $(docker ps -qa)
-docker rm $(docker ps -qa)
+docker stop `docker ps -qa`
+docker rm `docker ps -qa`
 
-# Build des images
-# PHP static
-docker build -t res/apache-php apache-php-image/
-# Express
-docker build -t res/express-students-express express-image-express/
-# Reverse Proxy
-docker build -t res/apache-rp apache-reverse-proxy/
+# On s'assure d'avoir les dernières versions des images
+docker build -t res/apache_php apache-php-image
+docker build -t res/express_students express-image-express
 
-# Lancement des containers dans le bon ordre (pour les IPs)
-# 4 PHP Static
-docker run -d res/apache-php
-docker run -d res/apache-php
-docker run -d res/apache-php
-docker run -d --name apache_php res/apache-php
-# 3 Express
-docker run -d res/express-students-express
-docker run -d res/express-students-express
-docker run -d --name express_dynamic res/express-students-express
-# Reverse Proxy
-docker run -d -e STATIC_IP=172.17.0.5 -e DYNAMIC_IP=172.17.0.8:3000 -p 8080:80 --name rp res/apache_rp
+# On lance tout d'abord les deux containers admin / config 
+$("pwd")/traefik.sh
+$("pwd")/portainer.sh
+
+# On lance ensuite deux containers de chaque type 
+docker run -d --name nodeApp res/express_students 
+docker run -d --name nodeApp2 res/express_students 
+docker run -d --name landingPage res/apache_php
+docker run -d --name landingPage2 res/apache_php

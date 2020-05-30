@@ -2,7 +2,7 @@ $(function() { //Periodically updates the Team text with AJAX
         console.log("Changing text");
 
         function loadMotto() {
-                $.getJSON("api/companies/", function(companies) {
+                $.getJSON("http://api.res.ch/", function(companies) {
                         console.log(companies);
                         //companies always contains at least 1 company
                         var message = companies[0].motto;
