@@ -1,10 +1,10 @@
 # Step 4: AJAX requests with JQuery
 
-Arrêt de tous les containers
-`docker kill <container_name> ...`
-`docker rm $(docker ps -qa)`
+- Arrêt de tous les containers
+  - `docker kill <container_name> ...`
+  - `docker rm $(docker ps -qa)`
 
-Modification du Dockerfile de apache-php-image pour y installer nvim
+- Modification du Dockerfile de apache-php-image pour y installer nvim
 
 ```dockerfile
 FROM php:7.2-apache
@@ -14,11 +14,12 @@ RUN apt update && apt install -y neovim
 COPY content/ /var/www/html/
 ```
 
-`docker build -t res/apache-php .`
+- Build de l'image
+  - `docker build -t res/apache-php .`
 
 
 
-Même chose pour apache-reverse-proxy
+- Modification du Dockerfile de apache-reverse-proxy pour y installer nvim
 
 ```dockerfile
 FROM php:7.2-apache
@@ -31,11 +32,12 @@ RUN a2enmod proxy proxy_http
 RUN a2ensite 000-* 001-*
 ```
 
-`docker build -t res/apache_rp .`
+- Build de l'image
+  - `docker build -t res/apache_rp .`
 
 
 
-Et finalement pour express-image-*
+- Modification du Dockerfile de pour express-image-*
 
 ```dockerfile
 FROM node:12.16.3
@@ -47,31 +49,27 @@ COPY src/ /opt/app
 CMD ["node", "/opt/app/index.js"]
 ```
 
-`docker build -t res/express_students_node .`
-
-`docker build -t res/express_students_express .`
-
-
-
-On rerun les containers apache_php, express_students_express, et apache_rp dans le même ordre qu'à l'étape précédante (pour avoir on l'espère les mêmes IP)
-
-`docker run -d --name apache_static res/apache-php `
-
-`docker run -d --name express_dynamic res/express_students_express`
-
-`docker run -d -p 8080:80 res/apache_rp`
-
-On test et constate que le tout fonctionne (dans le cas ou le dossier nodes_modules ne serait plus présent, il faut faire un npm install dans le dossier contenant package.json et rebuild l'image)
+- Build des images
+  - `docker build -t res/express_students_node .`
+  - `docker build -t res/express_students_express .`
 
 
 
-Se logguer dans la machine apache_static
+- On re-run les containers apache_php, express_students_express, et apache_rp dans le même ordre qu'à l'étape précédante (pour avoir, on l'espère, les mêmes IP)
+  - `docker run -d --name apache_static res/apache-php `
+  - `docker run -d --name express_dynamic res/express_students_express`
+  - `docker run -d -p 8080:80 res/apache_rp`
 
-`docker exec -it apache_static /bin/bash`
+- On test et constate que le tout fonctionne (dans le cas où le dossier nodes_modules ne serait plus présent, il faut faire un `npm install` dans le dossier contenant `package.json` et rebuild l'image)
 
-Backup de index.html `cp index.html index.html.ori`
 
-Ajout d'in ID  sur le texte à modifier et ajout de la balise script avant le fermeture du body
+
+- Se logguer dans la machine apache_static
+  - `docker exec -it apache_static /bin/bash`
+
+- Backup de index.html `cp index.html index.html.ori`
+
+- Ajout d'in ID  sur le texte à modifier dynamiquement et ajout de la balise script avant le fermeture du body
 
 ```html
 ...
@@ -82,7 +80,7 @@ Ajout d'in ID  sur le texte à modifier et ajout de la balise script avant le fe
 ...
 ```
 
-Création du script customText.js dans le dossier assets/js
+- Création du script customText.js dans le dossier assets/js
 
 ```javascript
 $(function() { //Periodically updates the Team text with AJAX
@@ -103,18 +101,26 @@ $(function() { //Periodically updates the Team text with AJAX
 });
 ```
 
-On peut tester le fonctionnement en affichant la page statique et on voit que le texte change bien toutes les 5 secondes
 
-On peut aussi voir les requêtes avec les dev tools du navigateur (Dans Network/XHR)
+
+- On peut tester le fonctionnement en affichant la page statique et on voit que le texte change bien toutes les 5 secondes
+
+- On peut aussi voir les requêtes avec les dev tools du navigateur (Dans Network/XHR)
 
 ![](./images/ajaxRequestsOK.png)
 
 
 
-On peut maintenant appliquer ces modifications à l'image docker, puis la rebuild, le rerun (on espere que l'adresse IP est la même)
+On peut maintenant appliquer ces modifications à l'image docker, puis la rebuild, re-run (on espère que l'adresse IP est la même)
 
 
 
-You are able to explain why your demo would not work without a reverse proxy (because of a security restriction).
+Le script de démo se trouve dans `docker-images`
 
-https://en.wikipedia.org/wiki/Same-origin_policy
+
+
+> You are able to explain why your demo would not work without a reverse proxy (because of a security restriction).
+
+La démo ne fonctionnerait pas si on avait pas de reverse proxy (à cause de/grâce à) la [Same-Origin Policy](https://en.wikipedia.org/wiki/Same-origin_policy) qui empêche un script sur une page d'accéder aux informations d'une autre page.
+
+L'utilisation du reverse proxy "cache" au web browser le fait qu'il y a plusieurs serveurs, donc à ses yeux, les requêtes viennent de la même origine
