@@ -96,7 +96,7 @@ Le script de démo se trouve dans `docker-images/apache-php-image`
 
 > Pourquoi est-ce une config fragile qui doit être améliorée? 
 
-Car les IPs sont hard codées, dépend de comment on redémarre les containers elles peuvent changer et le reverse proxy ne fonctionnerait plus (les containers contenant les site statique et dynamique ne seraient plus accessibles par le reeverse proxy)
+Car les IPs sont hard codées, dépend de comment on redémarre les containers elles peuvent changer et le reverse proxy ne fonctionnerait plus (les containers contenant les sites statique et dynamique ne seraient plus accessibles par le reeverse proxy)
 
 
 
@@ -107,7 +107,7 @@ Car les IPs sont hard codées, dépend de comment on redémarre les containers e
 
 ![](./images/rp_noAccess.png)
 
-On remarque que les container docker contenant nos sites statiques et dynamiques ne sont pas accessible. Logique car pas de port mapping, et ils n'ont que des IP privées (172.17.x.x). On ne peut donc y accéder que depuis le reverse proxy qui lui à un port mapping (dans cette config 8080 ==>  80)
+On remarque que les container docker contenant nos sites statiques et dynamiques ne sont pas accessibles. Logique, car pas de port mapping, et ils n'ont que des IP privées (172.17.x.x). On ne peut donc y accéder que depuis le reverse proxy qui lui à un port mapping (dans cette config 8080 ==>  80)
 
 ![](./images/rp_access.png)
 
@@ -118,3 +118,4 @@ Si on ne précise pas l'entête host, alors on obtient une erreur
 Ceci à cause du fait qu'on a une configuration vide pour le site `000-default`
 
 Il est possible d'accéder au site avec l'adrese `demo.res.ch` en éditant le fichier host de l'OS (le port doit être spécifié dans le navigateur, pas dans le fichier host)
+
