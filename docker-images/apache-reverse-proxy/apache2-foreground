@@ -42,5 +42,6 @@ echo "Setup for the HTTPInfra lab..."
 echo "Static $STATIC_IP"
 echo "Dynamic $DYNAMIC_IP"
 php /var/apache2/templates/config-template.php > /etc/apache2/sites-available/001-reverse-proxy.conf
+a2ensite 000-* 001-*
 
 exec apache2 -DFOREGROUND "$@"
