@@ -6,7 +6,7 @@ Version docker utilisée : `19.03.8-ce` OS : `Linux 5.6 - Manjaro`
 
 Version docker utilisée : `19.03.10-ce` OS : `Linux 5.6.15 - Arch Linux`
 
-*Disclaimer : Désolé par peur de ne pas pousser quelques choses d'utile alors il y a également toute la "pollution" made in NodeJS sur notre repo.*
+*Disclaimer : Désolé par peur de ne pas pousser quelques choses d'utile, il y a également toute la "pollution" made in NodeJS sur notre repo.*
 
 
 
