@@ -17,7 +17,7 @@ COPY content/ /var/www/html/
 - Lancer le container
   - `docker run -d -p 9090:80 php:7.2-apache`
 
-- Il est également possible de lancer le container en mode interactif afin d'explorer le filesystem
+- Il est également possible d'accéder au container en mode interactif afin d'explorer le filesystem
 
   - `docker exec -it <container_name> /bin/bash` 
 
