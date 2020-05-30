@@ -47,7 +47,7 @@ Run le container en mode interactif
 
 ## Mise en place Dockerfile
 
-Dockerfile
+- Copier dans le Dockerfile
 
 ```dockerfile
 FROM php:7.2-apache
@@ -58,14 +58,14 @@ RUN a2enmod proxy proxy_http
 RUN a2ensite 000-* 001-*
 ```
 
-conf/sites-available/000-default.conf pour que demo.res.ch ne soit accessible si le header Host n'est pas précisé
+- Le fichier `conf/sites-available/000-default.conf` est présent pour que demo.res.ch ne soit accessible si le header Host n'est pas précisé
 
 ```
 <VirtualHost *:80>
 </VirtualHost>
 ```
 
-conf/sites-available/001-reverse-proxy.conf (on reprend la config faite précédemment)
+- Reprise de la configuration précédente pour`conf/sites-available/001-reverse-proxy.conf` 
 
 ```
 <VirtualHost *:80>
@@ -82,38 +82,32 @@ conf/sites-available/001-reverse-proxy.conf (on reprend la config faite précéd
 </VirtualHost>
 ```
 
+- Build de l'image
+  - `docker build -t res/apache_rp .`
 
-
-Build de l'image
-
-`docker build -t res/apache_rp .`
-
-
-
-Run le container
-
-`docker run res/apache_rp`
+- Run le container
+  - `docker run res/apache_rp`
 
 
 
-
-
-Pourquoi est-ce une config fragile qui doit être améliorée? IP hard codées, dépend comment en redémarrant les containers elles peuvent changer et le reverse proxy ne fonctionnerait plus (les pages ne seraient plus accessible vu qu'on a du port mapping que pour le reverse proxy)
-
+Le script de démo se trouve dans `docker-images/apache-php-image`
 
 
 
+> Pourquoi est-ce une config fragile qui doit être améliorée? 
+
+Car les IPs sont hard codées, dépend de comment on redémarre les containers elles peuvent changer et le reverse proxy ne fonctionnerait plus (les containers contenant les site statique et dynamique ne seraient plus accessibles par le reeverse proxy)
 
 
 
-You can explain and prove that the static and dynamic servers cannot be reached directly (reverse proxy is a single entry point in the infra).
+> You can explain and prove that the static and dynamic servers cannot be reached directly (reverse proxy is a single entry point in the infra).
 
-- Explain: no part mapping, the php and node containers are unreachable for the outside world
+- Explain: no port mapping, the php and node containers are unreachable for the outside world
 - Proof: need other PC, or bridged VM
 
 ![](./images/rp_noAccess.png)
 
-On remarque que les container docker contenant nos sites statiques et dynamiques ne sont pas accessible. Logique car pas de port mapping, et ils n'ont que des IP privées (172.17.x.x). On ne peut donc y accéder que depuis le reverse proxy qui lui à un port mapping (dans cette config 8080->80)
+On remarque que les container docker contenant nos sites statiques et dynamiques ne sont pas accessible. Logique car pas de port mapping, et ils n'ont que des IP privées (172.17.x.x). On ne peut donc y accéder que depuis le reverse proxy qui lui à un port mapping (dans cette config 8080 ==>  80)
 
 ![](./images/rp_access.png)
 
@@ -121,8 +115,6 @@ Si on ne précise pas l'entête host, alors on obtient une erreur
 
 ![](./images/rp_noHost.png)
 
-Ceci à cause du fait qu'on a une configuration vide pour le site 000-default
+Ceci à cause du fait qu'on a une configuration vide pour le site `000-default`
 
-
-
-Possibilité d'accéder au site avec l'adrese `demo.res.ch` en éditant le fichier host de l'OS (ne pas oublier de préciser le port 8080 dans le navigateur...pas dans le fichier hosts)
+Il est possible d'accéder au site avec l'adrese `demo.res.ch` en éditant le fichier host de l'OS (le port doit être spécifié dans le navigateur, pas dans le fichier host)
