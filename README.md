@@ -1,10 +1,10 @@
-## Step 2: Dynamic HTTP server with express.js
+# Step 2: Dynamic HTTP server with express.js
 
 ## Node
 
-La dernière version stable d'apres le site officiel est 12.16.3 (https://nodejs.org/en/)
+La dernière version stable d'après le site officiel est 12.16.3 (https://nodejs.org/en/)
 
-Le Dockerfile
+- Copier ces lignes dans le Dockerfile
 
 ```dockerfile
 FROM node:12.16.3
@@ -15,15 +15,14 @@ COPY src/ /opt/app
 CMD ["node", "/opt/app/index.js"] 
 ```
 
-dans le dossier local src/
+- Dans le dossier local `src/`
+  - `npm init` 
+  - Remplire les champs demandés
 
-`npm init` 
+  - Installation du module node "chance"
+    - `npm install --save chance` 
 
-- Remplire les champs demandés
-
-`npm install --save chance` #installation du module node "chance"
-
-fichier index.js
+- Copier ces lignes dans le fichier `index.js`
 
 ```js
 var Chance = require('chance');
@@ -32,19 +31,24 @@ var chance = new Chance();
 console.log("Bonjour " + chance.name());
 ```
 
-Build de l'image docker
+- Build de l'image docker
+  - `docker build -t res/express_students_node .`
 
-`docker build -t res/express_students_node .`
+- Run l'image
+  - `docker run res/express_students_node`
 
-Run l'image
 
-`docker run res/express_students_node`
+
+Le script de démo se trouve dans `docker-images/express-image-node`
 
 ## Express
 
-`npm install --save express` #installation du module node "express"
+- Reprise du Dockerfile décrit plus haut
 
-fichier index.js
+- Installation du module node `express` dans le dossier `src/`
+  - `npm install --save express`
+
+- Copier ces lignes dans le fichier `index.js`
 
 ```js
 var Chance = require('chance');
@@ -86,17 +90,19 @@ function generateCompanies() {
 }
 ```
 
-Build de l'image docker
+- Build de l'image docker
+  - `docker build -t res/express_students_express .`
 
-`docker build -t res/express_students_express .`
-
-Run l'image
-
-`docker run res/express_students_express`
+- Run l'image
+  - `docker run res/express_students_express`
 
 - Il n'y a pour le moment pas de port mapping, il faut donc envoyer les requêtes au container directement
   - Son IP est trouvable avec `docker inspect <container_name>`
+- Run avec port mapping
 
-`docker run -p 4242:3000 res/express_students_express`
+  - `docker run -p 4242:3000 res/express_students_express`
+  - On a maintenant accès au serveur Express en utilisant l'IP de la machine hôte sur le port 4242
 
-- On a maintenant accès au serveur Express en utilisant l'IP de la machine hôte sur le port 4242
+
+
+Le script de démo se trouve dans `docker-images/express-image-express`
